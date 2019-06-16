@@ -1,0 +1,29 @@
+[
+  {
+    "id": "home",
+    "title": "Home",
+    "href": "/"
+  },
+  {
+    "id": "search",
+    "title": "Search",
+    "href": "/search"
+  },
+  {
+    "id": "about",
+    "title": "About us",
+    "href": "",
+    "items": [
+      {
+        "id": "about-contacts",
+        "title": "Contacts",
+        "href": "#contacts"
+      },
+      {
+        "id": "about-team",
+        "title": "Team",
+        "href": "#team"
+      }
+    ]
+  }
+]

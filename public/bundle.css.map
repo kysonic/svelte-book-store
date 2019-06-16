@@ -1,0 +1,16 @@
+{
+  "version": 3,
+  "file": "bundle.css",
+  "sources": [
+    "../src/App.svelte",
+    "../src/components/layouts/Header.svelte",
+    "../src/components/pages/Home.svelte"
+  ],
+  "sourcesContent": [
+    "<script>\n\texport let name;\n</script>\n\n<style>\n\th1 {\n\t\tcolor: purple;\n\t}\n</style>\n\n<h1>Hello {name}!</h1>\n",
+    "<script>\n    import {onMount} from 'svelte';\n    import navigation from '../../stores/navigation';\n    import {Link} from 'svelte-routing';\n\n    const {loading, error} = navigation;\n\n    onMount(async function() {\n       await navigation.fetch();\n    });\n</script>\n\n<style>\n    :root {\n       --navigatonBackground: #ccc;\n       --navigationHeight: 40px;\n       --loadingColor: #909090;\n       --linkColor: #5399cc;\n       --linkColorHovered: #447aa3;\n       --errorColor: #e93d5f;\n    }\n\n    .loading, .error {\n        display: flex;\n        align-items: center;\n        justify-content: center;\n        width: 100%;\n        height: 100%;\n        color: var(--loadingColor);\n    }\n\n    .error {\n        color: var(--errorColor);\n    }\n\n    nav {\n        width: 100vw;\n        height: var(--navigationHeight);\n        background: var(--navigatonBackground);\n    }\n\n    ul {\n        margin: 0;\n        padding: 10px;\n        list-style: none;\n    }\n\n    ul li {\n        display: inline-block;\n        margin-left: 10px;\n    }\n\n    ul li a {\n        color: var(--linkColor)\n    }\n\n    ul li a:hover {\n        color: var(--linkColorHovered);\n    }\n</style>\n\n<nav>\n    {#if $loading}\n        <div class=\"loading\">Loading...</div>\n    {:else if $error}\n        <div class=\"error\">{$error}</div>\n    {:else}\n        <ul>\n            {#each $navigation as item (item.id)}\n                <li>\n                    <Link to={item.href} >{item.title}</Link>\n                </li>\n            {/each}\n        </ul>\n    {/if}\n\n</nav>\n",
+    "<style>\n    h1, p {\n        padding: 20px;\n    }\n</style>\n\n<div class=\"Home\">\n   <h1>Welcome to the Svelte Book App</h1>\n   <p>Please go to the search page to find appropriate book.</p>\n</div>\n"
+  ],
+  "names": [],
+  "mappings": "AAKC,EAAE,cAAC,CAAC,AACH,KAAK,CAAE,MAAM,AACd,CAAC;ACME,KAAK,AAAC,CAAC,AACJ,qBAAqB,CAAE,IAAI,CAC3B,kBAAkB,CAAE,IAAI,CACxB,cAAc,CAAE,OAAO,CACvB,WAAW,CAAE,OAAO,CACpB,kBAAkB,CAAE,OAAO,CAC3B,YAAY,CAAE,OAAO,AACxB,CAAC,AAED,sBAAQ,CAAE,MAAM,cAAC,CAAC,AACd,OAAO,CAAE,IAAI,CACb,WAAW,CAAE,MAAM,CACnB,eAAe,CAAE,MAAM,CACvB,KAAK,CAAE,IAAI,CACX,MAAM,CAAE,IAAI,CACZ,KAAK,CAAE,IAAI,cAAc,CAAC,AAC9B,CAAC,AAED,MAAM,cAAC,CAAC,AACJ,KAAK,CAAE,IAAI,YAAY,CAAC,AAC5B,CAAC,AAED,GAAG,cAAC,CAAC,AACD,KAAK,CAAE,KAAK,CACZ,MAAM,CAAE,IAAI,kBAAkB,CAAC,CAC/B,UAAU,CAAE,IAAI,qBAAqB,CAAC,AAC1C,CAAC,AAED,EAAE,cAAC,CAAC,AACA,MAAM,CAAE,CAAC,CACT,OAAO,CAAE,IAAI,CACb,UAAU,CAAE,IAAI,AACpB,CAAC,AAED,gBAAE,CAAC,EAAE,cAAC,CAAC,AACH,OAAO,CAAE,YAAY,CACrB,WAAW,CAAE,IAAI,AACrB,CAAC;ACjDD,gBAAE,CAAE,CAAC,cAAC,CAAC,AACH,OAAO,CAAE,IAAI,AACjB,CAAC"
+}
