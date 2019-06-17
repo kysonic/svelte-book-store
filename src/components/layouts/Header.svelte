@@ -1,13 +1,15 @@
 <script>
     import {onMount} from 'svelte';
     import navigation from '../../stores/navigation';
-    import {Link} from 'svelte-routing';
+    import HeaderLink  from './HeaderLink.svelte';
 
     const {loading, error} = navigation;
 
     onMount(async function() {
        await navigation.fetch();
     });
+
+    $: root = {title: '', items: $navigation, isRoot: true};
 </script>
 
 <style>
@@ -15,8 +17,6 @@
        --navigatonBackground: #ccc;
        --navigationHeight: 40px;
        --loadingColor: #909090;
-       --linkColor: #5399cc;
-       --linkColorHovered: #447aa3;
        --errorColor: #e93d5f;
     }
 
@@ -38,25 +38,6 @@
         height: var(--navigationHeight);
         background: var(--navigatonBackground);
     }
-
-    ul {
-        margin: 0;
-        padding: 10px;
-        list-style: none;
-    }
-
-    ul li {
-        display: inline-block;
-        margin-left: 10px;
-    }
-
-    ul li a {
-        color: var(--linkColor)
-    }
-
-    ul li a:hover {
-        color: var(--linkColorHovered);
-    }
 </style>
 
 <nav>
@@ -65,13 +46,7 @@
     {:else if $error}
         <div class="error">{$error}</div>
     {:else}
-        <ul>
-            {#each $navigation as item (item.id)}
-                <li>
-                    <Link to={item.href} >{item.title}</Link>
-                </li>
-            {/each}
-        </ul>
+        <HeaderLink item={root} />
     {/if}
 
 </nav>
