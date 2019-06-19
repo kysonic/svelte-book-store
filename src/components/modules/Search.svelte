@@ -1,4 +1,5 @@
 <script>
+    import {Link} from 'svelte-routing';
     import books from '../../stores/books';
     const {loading, error} = books;
 
@@ -49,6 +50,7 @@
     table {
         padding: 20px 0;
         width: 100%;
+        height: auto;
         border-spacing: 0;
     }
 
@@ -104,7 +106,9 @@
                                         <td>{book.title}</td>
                                         <td>{book.author_name && book.author_name.join(', ')}</td>
                                         <td>{book.first_publish_year}</td>
-                                        <td on:click={() => viewDetails(book)}>View</td>
+                                        <td>
+                                            <Link to={`/details/${book.cover_edition_key}`}>View</Link>
+                                        </td>
                                     </tr>
                                 {/each}
                             </tbody>
