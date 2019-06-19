@@ -1,7 +1,5 @@
 <script>
+    import Search from '../modules/Search.svelte';
 </script>
 
-<style>
-</style>
-
-<div>Search</div>
+<Search />
