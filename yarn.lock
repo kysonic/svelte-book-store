@@ -620,6 +620,10 @@ iconv-lite@^0.4.4:
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
 
+idb@^4.0.3:
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/idb/-/idb-4.0.3.tgz#b454a51ba0c45038a9a7be6898ca996aa74f9a37"
+
 ignore-walk@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/ignore-walk/-/ignore-walk-3.0.1.tgz#a83e62e7d272ac0e3b551aaa82831a19b69f82f8"

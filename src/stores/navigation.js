@@ -15,7 +15,6 @@ const NavigationStore = () => ({
         try {
             loading.set(true);
             const response = await axios.get('/data/navigation.json');
-            await delay(1000 + (Math.random() * 500));
             loading.set(false);
             set(response.data);
             return response.data;
