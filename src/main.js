@@ -19,32 +19,18 @@ firebase.initializeApp(firebaseConfig);
 (() => {
 	let reg = null;
 	navigator.serviceWorker.register('./service-worker.js').then((registration) => {
-		console.log('Service worker was registered +++++');
 		reg = registration;
 		return registration.pushManager.getSubscription()
 	}).then((subscription) => {
-		console.log('Attempt to get subscription +++++', subscription);
 		if (subscription) {
 			return subscription;
 		}
 		return reg.pushManager.subscribe({ userVisibleOnly: true });
 	}).then((subscription) => {
-		/*console.log('Service get subscription +++++', subscription);
-		const rawKey = subscription.getKey ? subscription.getKey('p256dh') : '';
-		const key = rawKey ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawKey))) : '';
-		const rawAuthSecret = subscription.getKey ? subscription.getKey('auth') : '';
-		const authSecret = rawAuthSecret ? btoa(String.fromCharCode.apply(null, new Uint8Array(rawAuthSecret))) : '';
-		const endpoint = subscription.endpoint;
-		console.log(rawKey, key, rawAuthSecret, authSecret, endpoint);*/
-		console.log('Get messaging api');
-		console.log(firebase);
 		const messaging = firebase.messaging();
-		console.log('Set public key');
 		messaging.usePublicVapidKey('BObhD5x-CspJOjK8Z3JskhBA9r380vO5vukfxnEyPDOsTGq_ndT9hwg43cvxtZb525NUyHZgTwO8ddVnF8JKYBc');
-		console.log('Get token');
 		return messaging.getToken();
 	}).then((currentToken) => {
-		console.log('Current token obtained', currentToken);
 		return fetch('http://localhost:3003/register', {
 			method: 'post',
 			headers: {
