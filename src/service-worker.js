@@ -12,16 +12,23 @@ function isStatic(request) {
     return request.destination;
 }
 
+function isSPA(request) {
+    return request.destination === 'unknown';
+}
+
 const OPEN_LIBRARY_API_REGEXP = /openlibrary/ig;
+const OPEN_LIBRARY_STATIC_REGEXP = /covers/ig;
 
 async function precache() {
     const cache = await caches.open(`${CACHE}:${CACHE_VERSION}`);
     // Serve static resources
     return cache.addAll([
+        './',
         './index.html',
         './bundle.css',
         './global.css',
-        './bundle.js'
+        './bundle.js',
+        './data/navigation.json'
     ]);
 }
 
@@ -81,14 +88,24 @@ self.addEventListener('fetch',  function(e) {
 });
 
 async function fetchHandler(request) {
+    console.log(`Fetch >>> ${request.url}. Online: ${navigator.onLine}`);
+
+    if (isSPA(request) && !navigator.onLine) {
+        return await fromCache(new Request('/'));
+    }
+
     if (isStatic(request)) {
         console.log('The service worker is serving the static asset <<<<<');
+        // Looking for static cache if we are offline
+        if (!navigator.onLine) {
+            return await fromCache(request);
+        }
         try {
             const response = await fromNetwork(request, STATIC_TIMEOUT);
             return response;
         } catch (err) {
             try {
-                const response = await fromNetwork(request, STATIC_TIMEOUT);
+                const response = await fromCache(request);
                 return response;
             } catch(err) {
                 return await fromNetwork(request, INFINITE);
@@ -96,8 +113,12 @@ async function fetchHandler(request) {
         }
     }
 
-    if (OPEN_LIBRARY_API_REGEXP.test(request.url)) {
+    if (OPEN_LIBRARY_API_REGEXP.test(request.url) && !OPEN_LIBRARY_STATIC_REGEXP.test(request.url)) {
         console.log('The service worker is serving open library api calls <<<<<');
+        // Handle all offline request through indexedDB
+        if (!navigator.onLine) {
+            return await fromDB(request);
+        }
         try {
             const response = await fromNetwork(request, API_TIMEOUT);
             return response;
@@ -111,7 +132,7 @@ async function fetchHandler(request) {
         }
     }
 
-    return fromNetwork(request, INFINITE);
+    return navigator.onLine ? fromNetwork(request, INFINITE) : fromCache(request);
 }
 
 
@@ -148,7 +169,14 @@ async function fromCache(request) {
 }
 
 async function fromDB(request) {
-    throw Error('No impl');
+    const url = new URL(request.url);
+    const query = url.searchParams.get('title');
+    const db = await openDB(DB_NAME, DB_VERSION);
+    const books = await db.getAllFromIndex('books', 'title', query);
+    const data = {docs: books, start:0, numFound: 9999};
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type : 'application/json'});
+    const opts = { "status" : 200 , "statusText" : "SuperSmashingGreat!" };
+    return  new Response(blob, opts);
 }
 
 async function cacheApiResponse(request, response) {
