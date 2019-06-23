@@ -1,3 +1,4 @@
 yarn-error.log
 ./public/bundle.*
 ./public/service-worker.js
+node_modules
