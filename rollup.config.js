@@ -60,5 +60,20 @@ export default [
 		watch: {
 			clearScreen: false
 		}
+	},
+	{
+		input: 'src/firebase-messaging-sw.js',
+		output: {
+			sourcemap: true,
+			format: 'iife',
+			file: 'public/firebase-messaging-sw.js'
+		},
+		plugins: [
+			resolve({ browser: true }),
+			commonjs()
+		],
+		watch: {
+			clearScreen: false
+		}
 	}
 ];

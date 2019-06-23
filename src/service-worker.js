@@ -7,6 +7,9 @@ const DB_NAME = 'openlibrary';
 const DB_VERSION = 1;
 const STATIC_TIMEOUT = 400;
 const API_TIMEOUT = 1000;
+const DEBUG = false;
+
+const debug = (...args) => DEBUG && console.log(args);
 
 function isStatic(request) {
     return request.destination;
@@ -28,17 +31,19 @@ async function precache() {
         './bundle.css',
         './global.css',
         './bundle.js',
-        './data/navigation.json'
+        './data/navigation.json',
+        './manifest.json',
+        './favicon.png'
     ]);
 }
 
 self.addEventListener('install', (e) => {
-    console.info('Service worker being installed!!!!');
+    debug('Service worker being installed!!!!');
     e.waitUntil(precache());
 });
 
 self.addEventListener('activate', (e) => {
-    console.info('Service worker is active!!!!');
+    debug('Service worker is active!!!!');
     e.waitUntil(activateHandler());
 });
 
@@ -88,14 +93,14 @@ self.addEventListener('fetch',  function(e) {
 });
 
 async function fetchHandler(request) {
-    console.log(`Fetch >>> ${request.url}. Online: ${navigator.onLine}`);
+    debug(`Fetch >>> ${request.url}. Online: ${navigator.onLine}`);
 
     if (isSPA(request) && !navigator.onLine) {
         return await fromCache(new Request('/'));
     }
 
     if (isStatic(request)) {
-        console.log('The service worker is serving the static asset <<<<<');
+        debug('The service worker is serving the static asset <<<<<');
         // Looking for static cache if we are offline
         if (!navigator.onLine) {
             return await fromCache(request);
@@ -114,7 +119,7 @@ async function fetchHandler(request) {
     }
 
     if (OPEN_LIBRARY_API_REGEXP.test(request.url) && !OPEN_LIBRARY_STATIC_REGEXP.test(request.url)) {
-        console.log('The service worker is serving open library api calls <<<<<');
+        debug('The service worker is serving open library api calls <<<<<');
         // Handle all offline request through indexedDB
         if (!navigator.onLine) {
             return await fromDB(request);
@@ -137,12 +142,12 @@ async function fetchHandler(request) {
 
 
 async function fromNetwork(request, timeout) {
-    console.log('From network<<<<<', request.url);
+    debug('From network<<<<<', request.url);
     const controller = new AbortController();
     const signal = controller.signal;
 
     const timeoutId = setTimeout(() => {
-        console.log('Request timeout >>>>', request.url);
+        debug('Request timeout >>>>', request.url);
         controller.abort();
     }, timeout);
     const response = await fetch(request, {signal});
@@ -159,7 +164,7 @@ async function fromNetwork(request, timeout) {
 }
 
 async function fromCache(request) {
-    console.log('From cache <<<<', request.url);
+    debug('From cache <<<<', request.url);
     const cache = await caches.open(`${CACHE}:${CACHE_VERSION}`);
     const matching = await cache.match(request);
     if (matching) {
@@ -169,6 +174,7 @@ async function fromCache(request) {
 }
 
 async function fromDB(request) {
+    debug('From DB >>>', request.url);
     const url = new URL(request.url);
     const query = url.searchParams.get('title');
     const db = await openDB(DB_NAME, DB_VERSION);
@@ -180,7 +186,7 @@ async function fromDB(request) {
 }
 
 async function cacheApiResponse(request, response) {
-    console.log('cacheApiResponse <<<', request.url);
+    debug('cacheApiResponse <<<', request.url);
     const clonedResponse = response.clone();
     const cache = await caches.open(`${CACHE}:${CACHE_VERSION}`);
     // Cache on 6 hours
@@ -193,9 +199,22 @@ async function cacheApiResponse(request, response) {
 }
 
 async function cacheInDB(response) {
-    console.log('Cache in DB <<<<');
+    debug('Cache in DB <<<<');
     const clonedResponse = response.clone();
     const data = await clonedResponse.json();
     const db = await openDB(DB_NAME, DB_VERSION);
     await Promise.all(data.docs.map(doc => db.put('books', doc)));
 }
+
+// Push
+
+self.addEventListener('push', function(event) {
+    console.log(event, event.data);
+    const payload = event.data ? event.data.text() : 'WTF?';
+
+    event.waitUntil(
+        self.registration.showNotification('My first spell', {
+            body: payload,
+        })
+    );
+});
