@@ -1,5 +1,7 @@
 import { openDB } from 'idb';
 
+const DEBUG = true;
+
 const CACHE = 'network-or-cache';
 const CACHE_VERSION = 1;
 const INFINITE = 99999999999999999;
@@ -7,9 +9,8 @@ const DB_NAME = 'openlibrary';
 const DB_VERSION = 1;
 const STATIC_TIMEOUT = 400;
 const API_TIMEOUT = 1000;
-const DEBUG = false;
 
-const debug = (...args) => DEBUG && console.log(args);
+const debug = (...args) => DEBUG && console.log.apply(console, args);
 
 function isStatic(request) {
     return request.destination;
@@ -209,7 +210,7 @@ async function cacheInDB(response) {
 // Push
 
 self.addEventListener('push', function(event) {
-    console.log(event, event.data);
+    debug('Push notification has been received >>>', event);
     const payload = event.data ? event.data.text() : 'WTF?';
 
     event.waitUntil(
@@ -217,4 +218,19 @@ self.addEventListener('push', function(event) {
             body: payload,
         })
     );
+});
+
+// Sync
+
+self.addEventListener('sync', function(event) {
+    debug('Attempt to run synchronisation >>>', event);
+    if (event.tag === 'update') {
+        event.waitUntil(
+            caches.open(`${CACHE}:${CACHE_VERSION}`).then(function(cache) {
+                const url = `http://openlibrary.org/search.json?title=${event.query || 'Idiot'}`;
+                debug('Attempt to add in cache >>>', url);
+                return cache.add(url);
+            })
+        );
+    }
 });
