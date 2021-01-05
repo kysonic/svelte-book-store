@@ -20,7 +20,7 @@
     "start:dev": "http-server-spa public index.html 5000"
   },
   "dependencies": {
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "firebase": "^6.2.2",
     "idb": "^4.0.3",
     "svelte-routing": "^1.2.0"
