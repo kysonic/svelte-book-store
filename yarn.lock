@@ -2024,9 +2024,9 @@ svelte-routing@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/svelte-routing/-/svelte-routing-1.2.0.tgz#6af0b67f458ed34cd00ad3f8f8a4ab03ae9b949b"
 
-svelte@^3.0.0:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.5.1.tgz#fa6cc030a98df4af05e7a325c8b4537d21257c2d"
+svelte@^3.49.0:
+  version "3.49.0"
+  resolved "https://registry.yarnpkg.com/svelte/-/svelte-3.49.0.tgz#5baee3c672306de1070c3b7888fc2204e36a4029"
 
 tar@^4:
   version "4.4.10"
